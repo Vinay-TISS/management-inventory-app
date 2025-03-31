@@ -148,16 +148,18 @@ if st.button("✅ Submit Responses"):
     pdf.cell(0, 10, f"TISS ID: {tiss_id}", ln=True)
     pdf.cell(0, 10, f"Style: {final_style} ({final_score})", ln=True)
     pdf.ln(8)
-    def clean_pdf_text(text):
+def clean_pdf_text(text):
     replacements = {
-        "—": "-", "–": "-", "“": "\"", "”": "\"", "‘": "'", "’": "'", "\u00A0": " "
+        "—": "-", "–": "-", "“": "\"", "”": "\"",
+        "‘": "'", "’": "'", "\u00A0": " "
     }
     for k, v in replacements.items():
         text = text.replace(k, v)
     return text.encode('latin-1', 'replace').decode('latin-1')
 
-    cleaned_description = clean_pdf_text(style_descriptions[final_style])
-    pdf.multi_cell(0, 8, cleaned_description)
+cleaned_desc = clean_pdf_text(style_descriptions[final_style])
+pdf.multi_cell(0, 8, cleaned_desc)
+
     if os.path.exists("radar_chart.png"):
         pdf.image("radar_chart.png", w=150)
     pdf.output("management_style_report.pdf")

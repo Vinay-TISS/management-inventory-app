@@ -24,21 +24,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- WELCOME PAGE ---
-if 'page' not in st.session_state:
-    st.session_state.page = 'welcome'
-
-if st.session_state.page == 'welcome':
-    st.image("logo.png", width=150)
-    st.markdown("<h1 style='text-align: center;'>🎯 Leadership Style Inventory</h1>", unsafe_allow_html=True)
-    st.markdown("""
-        Welcome! This tool helps you discover your natural management style based on your preferences.
-        After answering a set of questions, you'll receive a detailed report and chart summarizing your leadership traits.
-    """)
-    if st.button("🚀 Start Assessment"):
-        st.session_state.page = 'quiz'
-    st.stop()
-
 # --- LOAD QUESTIONS ---
 @st.cache_data
 
@@ -75,6 +60,13 @@ This style doesn’t work well with unmotivated employees or those lacking prope
 
 Visionaries also focus a lot on employee growth and learning. Visionaries have a wonderful larger perspective but often miss the important details of day-to-day work. Visionary management is best when team members need inspiration, purpose, and personal growth.'''
     }
+
+# --- LOGO + TITLE ---
+st.image("logo.png", width=150)
+st.markdown("<h1 style='text-align: center;'>🎯 Leadership Style Inventory</h1>", unsafe_allow_html=True)
+st.markdown("""
+Welcome! This tool helps you discover your natural management style based on your preferences. After answering a set of questions, you'll receive a detailed report and chart summarizing your leadership traits.
+""")
 
 # --- USER INFO ---
 st.markdown("### 👤 Participant Information")

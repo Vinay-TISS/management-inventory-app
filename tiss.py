@@ -97,44 +97,54 @@ for index, row in questions_df.iterrows():
 
 # --- SUBMIT BUTTON ---
 if st.button("✅ Submit Responses"):
-    part_scores = {}
-    for part, score in responses:
-        part_scores[part] = part_scores.get(part, 0) + score
+    from collections import defaultdict
 
-    style_map = {
-        "PART1": "Top Dog",
-        "PART 1": "Top Dog",
-        "PART2": "Collaborator",
-        "PART 2": "Collaborator",
-        "PART3": "Chillaxer",
-        "PART 3": "Chillaxer",
-        "PART4": "Visionary",
-        "PART 4": "Visionary"
+    # Define question index to style mapping
+    position_style_map = {
+        0: "Top Dog",
+        1: "Collaborator",
+        2: "Chillaxer",
+        3: "Visionary"
     }
 
-    style_totals = {}
-    for part, total in part_scores.items():
-        style = style_map.get(part)
-        if style:
-            style_totals[style] = style_totals.get(style, 0) + total
+    style_totals = {
+        "Top Dog": 0,
+        "Collaborator": 0,
+        "Chillaxer": 0,
+        "Visionary": 0
+    }
 
+    part_question_counter = defaultdict(int)
+
+    for index, row in questions_df.iterrows():
+        part = row["Part"]
+        question_index = part_question_counter[part]
+        style = position_style_map.get(question_index % 4)
+        part_question_counter[part] += 1
+
+        style_totals[style] += responses[index][1]
+
+    # Get final style
     final_style = max(style_totals.items(), key=lambda x: x[1])[0]
     final_score = style_totals[final_style]
 
+    # Show result
     st.markdown("---")
     st.markdown(f"<h2 style='text-align:center; color:green;'>🌟 Your Management Style: {final_style}</h2>", unsafe_allow_html=True)
-    # Score Table Display on Streamlit (Not in PDF)
-    st.markdown("### 📊 Score Table for All Management Styles")
-    score_df = pd.DataFrame(list(style_totals.items()), columns=["Management Style", "Score"])
-    st.table(score_df)
     st.markdown(f"""
     <div style='background-color:#f0f9ff; padding:20px; border-radius:10px; border-left: 6px solid #4CAF50;'>
     {style_descriptions[final_style]}
     </div>
     """, unsafe_allow_html=True)
 
-    radar_df = pd.DataFrame(list(style_totals.items()), columns=["Style", "Score"])
-    fig = px.line_polar(radar_df, r="Score", theta="Style", line_close=True, title="Your Style Chart", markers=True)
+    # 📊 Show score table
+    score_df = pd.DataFrame(list(style_totals.items()), columns=["Management Style", "Score"])
+    st.markdown("### 📊 Style-wise Score Table")
+    st.table(score_df)
+
+    # 🕸️ Radar Chart
+    fig = px.line_polar(score_df, r="Score", theta="Management Style", line_close=True,
+                        title="Your Style Chart", markers=True)
     fig.update_traces(fill='toself', line_color='blue')
     fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 60])), paper_bgcolor="#f7f7f7")
     st.plotly_chart(fig)

@@ -5,6 +5,7 @@ import pandas as pd
 import plotly.express as px
 from fpdf import FPDF
 import os
+import unicodedata
 
 # --- CONFIG ---
 st.set_page_config(page_title="Management Style Finder", layout="centered")
@@ -26,7 +27,6 @@ st.markdown(
 
 # --- LOAD QUESTIONS ---
 @st.cache_data
-
 def load_questions():
     xls = pd.ExcelFile("Book1.xlsx")
     all_parts = []
@@ -136,6 +136,15 @@ if st.button("✅ Submit Responses"):
     st.plotly_chart(fig)
     fig.write_image("radar_chart.png")
 
+    def clean_pdf_text(text):
+        replacements = {
+            "—": "-", "–": "-", "“": "\"", "”": "\"",
+            "‘": "'", "’": "'", "\u00A0": " "
+        }
+        for k, v in replacements.items():
+            text = text.replace(k, v)
+        return text.encode('latin-1', 'replace').decode('latin-1')
+
     pdf = FPDF()
     pdf.add_page()
     pdf.image("logo.png", x=10, y=8, w=40)
@@ -148,18 +157,7 @@ if st.button("✅ Submit Responses"):
     pdf.cell(0, 10, f"TISS ID: {tiss_id}", ln=True)
     pdf.cell(0, 10, f"Style: {final_style} ({final_score})", ln=True)
     pdf.ln(8)
-def clean_pdf_text(text):
-    replacements = {
-        "—": "-", "–": "-", "“": "\"", "”": "\"",
-        "‘": "'", "’": "'", "\u00A0": " "
-    }
-    for k, v in replacements.items():
-        text = text.replace(k, v)
-    return text.encode('latin-1', 'replace').decode('latin-1')
-
-cleaned_desc = clean_pdf_text(style_descriptions[final_style])
-pdf.multi_cell(0, 8, cleaned_desc)
-
+    pdf.multi_cell(0, 8, clean_pdf_text(style_descriptions[final_style]))
     if os.path.exists("radar_chart.png"):
         pdf.image("radar_chart.png", w=150)
     pdf.output("management_style_report.pdf")

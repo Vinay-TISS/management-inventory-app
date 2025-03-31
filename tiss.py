@@ -123,6 +123,10 @@ if st.button("✅ Submit Responses"):
 
     st.markdown("---")
     st.markdown(f"<h2 style='text-align:center; color:green;'>🌟 Your Management Style: {final_style}</h2>", unsafe_allow_html=True)
+    # Score Table Display on Streamlit (Not in PDF)
+    st.markdown("### 📊 Score Table for All Management Styles")
+    score_df = pd.DataFrame(list(style_totals.items()), columns=["Management Style", "Score"])
+    st.table(score_df)
     st.markdown(f"""
     <div style='background-color:#f0f9ff; padding:20px; border-radius:10px; border-left: 6px solid #4CAF50;'>
     {style_descriptions[final_style]}

@@ -24,21 +24,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- WELCOME PAGE ---
-if 'page' not in st.session_state:
-    st.session_state.page = 'welcome'
-
-if st.session_state.page == 'welcome':
-    st.image("logo.png", width=150)
-    st.markdown("<h1 style='text-align: center;'>🎯 Management Style Inventory</h1>", unsafe_allow_html=True)
-    st.markdown("""
-        Welcome! This tool helps you discover your natural management style based on your preferences.
-        After answering a set of questions, you'll receive a detailed report and chart summarizing your management traits.
-    """)
-    if st.button("🚀 Start Assessment"):
-        st.session_state.page = 'quiz'
-    st.stop()
-
 # --- LOAD QUESTIONS ---
 @st.cache_data
 
@@ -76,7 +61,21 @@ This style doesn’t work well with unmotivated employees or those lacking prope
 Visionaries also focus a lot on employee growth and learning. Visionaries have a wonderful larger perspective but often miss the important details of day-to-day work. Visionary management is best when team members need inspiration, purpose, and personal growth.'''
     }
 
-# --- USER INFO ---
+# --- TOP LEFT LOGO ---
+st.markdown("""
+<div style='position: absolute; top: 10px; left: 10px;'>
+    <img src='https://raw.githubusercontent.com/your-repo-path/logo.png' width='60'>
+</div>
+""", unsafe_allow_html=True)
+
+# --- APP INTRO + USER DETAILS ---
+st.image("logo.png", width=150)
+st.markdown("<h1 style='text-align: center;'>🎯 Management Style Inventory</h1>", unsafe_allow_html=True)
+st.markdown("""
+Welcome! This tool helps you discover your natural management style based on your preferences.
+After answering a set of questions, you'll receive a detailed report and chart summarizing your management traits.
+""")
+
 st.markdown("### 👤 Participant Information")
 name = st.text_input("Your Name")
 tiss_id = st.text_input("TISS ID")
@@ -122,7 +121,7 @@ if st.button("✅ Submit Responses"):
     final_style = max(style_totals.items(), key=lambda x: x[1])[0]
     final_score = style_totals[final_style]
 
-    # --- DISPLAY RESULT ---
+    st.markdown("---")
     st.markdown(f"<h2 style='text-align:center; color:green;'>🌟 Your Management Style: {final_style}</h2>", unsafe_allow_html=True)
     st.markdown(f"""
     <div style='background-color:#f0f9ff; padding:20px; border-radius:10px; border-left: 6px solid #4CAF50;'>
@@ -130,7 +129,6 @@ if st.button("✅ Submit Responses"):
     </div>
     """, unsafe_allow_html=True)
 
-    # --- CHART ---
     radar_df = pd.DataFrame(list(style_totals.items()), columns=["Style", "Score"])
     fig = px.line_polar(radar_df, r="Score", theta="Style", line_close=True, title="Your Style Chart", markers=True)
     fig.update_traces(fill='toself', line_color='blue')
@@ -138,7 +136,6 @@ if st.button("✅ Submit Responses"):
     st.plotly_chart(fig)
     fig.write_image("radar_chart.png")
 
-    # --- PDF ---
     pdf = FPDF()
     pdf.add_page()
     pdf.image("logo.png", x=10, y=8, w=40)

@@ -1,4 +1,4 @@
-# leadership_style_app.py
+# management_style_app.py
 
 import streamlit as st
 import pandas as pd
@@ -7,7 +7,7 @@ from fpdf import FPDF
 import os
 
 # --- CONFIG ---
-st.set_page_config(page_title="Leadership Style Finder", layout="centered")
+st.set_page_config(page_title="Management Style Finder", layout="centered")
 
 # --- BACKGROUND IMAGE ---
 st.markdown(
@@ -23,6 +23,21 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+# --- WELCOME PAGE ---
+if 'page' not in st.session_state:
+    st.session_state.page = 'welcome'
+
+if st.session_state.page == 'welcome':
+    st.image("logo.png", width=150)
+    st.markdown("<h1 style='text-align: center;'>🎯 Management Style Inventory</h1>", unsafe_allow_html=True)
+    st.markdown("""
+        Welcome! This tool helps you discover your natural management style based on your preferences.
+        After answering a set of questions, you'll receive a detailed report and chart summarizing your management traits.
+    """)
+    if st.button("🚀 Start Assessment"):
+        st.session_state.page = 'quiz'
+    st.stop()
 
 # --- LOAD QUESTIONS ---
 @st.cache_data
@@ -42,9 +57,9 @@ def load_questions():
 # --- STYLES TEXT ---
 def get_style_description():
     return {
-        "Top Dog": '''This manager prefers to be in control. Communication tends to be one-way. They say what to do and expect team members to do it. It's an autocratic approach to leadership.
+        "Top Dog": '''This manager prefers to be in control. Communication tends to be one-way. They say what to do and expect team members to do it. It's an autocratic approach to management.
 
-When there's a crisis, or when things need to get done quickly, a take-charge approach to leadership can be very efficient. Sometimes we need a strong general to get us through the battle, or a decisive coach to dictate the next play. But this can come at the cost of team morale or employee welfare. Often these leaders speak in an urgent tone that doesn't feel good to hear. They give feedback without considering the impact of their words. And they may miss others’ good ideas by failing to listen.
+When there's a crisis, or when things need to get done quickly, a take-charge approach to management can be very efficient. Sometimes we need a strong general to get us through the battle, or a decisive coach to dictate the next play. But this can come at the cost of team morale or employee welfare. Often these managers speak in an urgent tone that doesn't feel good to hear. They give feedback without considering the impact of their words. And they may miss others’ good ideas by failing to listen.
 
 Top Dog management is best for urgent, high-stakes situations where a quick result is the biggest priority, provided the manager actually knows what's best and can keep their severity in check.''',
 
@@ -60,13 +75,6 @@ This style doesn’t work well with unmotivated employees or those lacking prope
 
 Visionaries also focus a lot on employee growth and learning. Visionaries have a wonderful larger perspective but often miss the important details of day-to-day work. Visionary management is best when team members need inspiration, purpose, and personal growth.'''
     }
-
-# --- LOGO + TITLE ---
-st.image("logo.png", width=150)
-st.markdown("<h1 style='text-align: center;'>🎯 Leadership Style Inventory</h1>", unsafe_allow_html=True)
-st.markdown("""
-Welcome! This tool helps you discover your natural management style based on your preferences. After answering a set of questions, you'll receive a detailed report and chart summarizing your leadership traits.
-""")
 
 # --- USER INFO ---
 st.markdown("### 👤 Participant Information")
@@ -115,7 +123,7 @@ if st.button("✅ Submit Responses"):
     final_score = style_totals[final_style]
 
     # --- DISPLAY RESULT ---
-    st.markdown(f"<h2 style='text-align:center; color:green;'>🌟 Your Leadership Style: {final_style}</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='text-align:center; color:green;'>🌟 Your Management Style: {final_style}</h2>", unsafe_allow_html=True)
     st.markdown(f"""
     <div style='background-color:#f0f9ff; padding:20px; border-radius:10px; border-left: 6px solid #4CAF50;'>
     {style_descriptions[final_style]}
@@ -136,7 +144,7 @@ if st.button("✅ Submit Responses"):
     pdf.image("logo.png", x=10, y=8, w=40)
     pdf.set_font("Arial", 'B', 16)
     pdf.ln(25)
-    pdf.cell(0, 10, "Leadership Style Report", ln=True, align="C")
+    pdf.cell(0, 10, "Management Style Report", ln=True, align="C")
     pdf.set_font("Arial", size=12)
     pdf.ln(10)
     pdf.cell(0, 10, f"Name: {name}", ln=True)
@@ -146,7 +154,7 @@ if st.button("✅ Submit Responses"):
     pdf.multi_cell(0, 8, style_descriptions[final_style])
     if os.path.exists("radar_chart.png"):
         pdf.image("radar_chart.png", w=150)
-    pdf.output("leadership_style_report.pdf")
+    pdf.output("management_style_report.pdf")
 
-    with open("leadership_style_report.pdf", "rb") as f:
-        st.download_button("📥 Download Full Report", data=f, file_name="leadership_style_report.pdf", mime="application/pdf")
+    with open("management_style_report.pdf", "rb") as f:
+        st.download_button("📥 Download Full Report", data=f, file_name="management_style_report.pdf", mime="application/pdf")

@@ -79,10 +79,10 @@ After answering a set of questions, you'll receive a detailed report and chart s
 st.markdown("### 👤 Participant Information")
 name = st.text_input("Your Name")
 tiss_id = st.text_input("TISS ID")
-password = st.text_input("Enter Access Password", type="password")
-if password != "Tiss@2025":
-    st.warning("Please enter the correct password to continue.")
-    st.stop()
+#password = st.text_input("Enter Access Password", type="password")
+#if password != "Tiss@2025":
+ #   st.warning("Please enter the correct password to continue.")
+  #  st.stop()
 
 # --- ASSESSMENT ---
 questions_df = load_questions()

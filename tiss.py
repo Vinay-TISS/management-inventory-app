@@ -125,8 +125,14 @@ if st.button("✅ Submit Responses"):
         style_totals[style] += responses[index][1]
 
     # Get final style
-    final_style = max(style_totals.items(), key=lambda x: x[1])[0]
-    final_score = style_totals[final_style]
+    max_score = max(style_totals.values())
+
+    # List of all top styles with max score
+    top_styles = [(style, score) for style, score in style_totals.items() if score == max_score]
+
+    # For compatibility with rest of code
+    final_style = top_styles[0][0]
+    final_score = top_styles[0][1]
 
     # Show result
     st.markdown("---")

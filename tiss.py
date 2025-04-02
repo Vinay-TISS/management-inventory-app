@@ -28,7 +28,7 @@ st.markdown(
 # --- LOAD QUESTIONS ---
 @st.cache_data
 def load_questions():
-    xls = pd.ExcelFile("Book1.xlsx")
+    xls = pd.ExcelFile("Book2.xlsx")
     all_parts = []
     for i in range(1, 7):
         sheet = f"PART {i}" if f"PART {i}" in xls.sheet_names else f"PART{i}"

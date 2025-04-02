@@ -124,24 +124,28 @@ if st.button("✅ Submit Responses"):
 
         style_totals[style] += responses[index][1]
 
-    # Get final style
+    # Get top styles (supporting tie case)
     max_score = max(style_totals.values())
-
-    # List of all top styles with max score
     top_styles = [(style, score) for style, score in style_totals.items() if score == max_score]
 
-    # For compatibility with rest of code
-    final_style = top_styles[0][0]
+    final_style = top_styles[0][0]  # used for file name, fallback
     final_score = top_styles[0][1]
 
-    # Show result
+    # Show results
     st.markdown("---")
-    st.markdown(f"<h2 style='text-align:center; color:green;'>🌟 Your Management Style: {final_style}</h2>", unsafe_allow_html=True)
-    st.markdown(f"""
-    <div style='background-color:#f0f9ff; padding:20px; border-radius:10px; border-left: 6px solid #4CAF50;'>
-    {style_descriptions[final_style]}
-    </div>
-    """, unsafe_allow_html=True)
+    if len(top_styles) == 1:
+        st.markdown(f"<h2 style='text-align:center; color:green;'>🌟 Your Management Style: {final_style}</h2>", unsafe_allow_html=True)
+    else:
+        all_names = ", ".join([s[0] for s in top_styles])
+        st.markdown(f"<h2 style='text-align:center; color:green;'>🌟 Your Management Styles: {all_names}</h2>", unsafe_allow_html=True)
+
+    for style, score in top_styles:
+        st.markdown(f"""
+        <div style='background-color:#f0f9ff; padding:20px; border-radius:10px; border-left: 6px solid #4CAF50;'>
+        <b>{style} ({score})</b><br><br>
+        {style_descriptions[style]}
+        </div>
+        """, unsafe_allow_html=True)
 
     # 📊 Show score table
     score_df = pd.DataFrame(list(style_totals.items()), columns=["Management Style", "Score"])
@@ -175,9 +179,16 @@ if st.button("✅ Submit Responses"):
     pdf.ln(10)
     pdf.cell(0, 10, f"Name: {name}", ln=True)
     pdf.cell(0, 10, f"TISS ID: {tiss_id}", ln=True)
-    pdf.cell(0, 10, f"Style: {final_style} ({final_score})", ln=True)
+    pdf.cell(0, 10, f"Style(s): {', '.join([s[0] for s in top_styles])}", ln=True)
     pdf.ln(8)
-    pdf.multi_cell(0, 8, clean_pdf_text(style_descriptions[final_style]))
+
+    for style, score in top_styles:
+        pdf.set_font("Arial", 'B', 12)
+        pdf.multi_cell(0, 8, clean_pdf_text(f"{style} ({score})"))
+        pdf.set_font("Arial", size=12)
+        pdf.multi_cell(0, 8, clean_pdf_text(style_descriptions[style]))
+        pdf.ln(4)
+
     if os.path.exists("radar_chart.png"):
         pdf.image("radar_chart.png", w=150)
     pdf.output("management_style_report.pdf")
